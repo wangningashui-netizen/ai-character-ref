@@ -2,7 +2,7 @@ import { generateWithPixAi, PIXAI_MODELS, type PixAiTaskHandle, type PreparedPix
 import type { ApiConfig, ExtraReferenceImage, ImageProviderId, RecipeState } from '@/types/gallery'
 import { getGptInputFidelity } from '@/lib/gptImageCapabilities'
 import { applyWorkflowOverrides, getWorkflowImages, validateReferenceCombinations, workflowIdentity, type ComfyObjectInfo } from '@/lib/comfyWorkflowParameters'
-import { poseImagePath, referenceImageUrl } from '@/lib/recipeImages'
+import { imageFallbackUrl, poseImagePath, referenceImageUrl } from '@/lib/recipeImages'
 import qwen2509ThreeImageWorkflow from '@/workflows/qwen_image_edit_2509_3img.api.json'
 
 export interface ProviderModelOption {
@@ -261,13 +261,22 @@ export function fileToDataUrl(file: File): Promise<string> {
   })
 }
 
-function loadImage(src: string): Promise<HTMLImageElement> {
+function loadOneImage(url: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
     const img = new Image()
     img.crossOrigin = 'anonymous'
     img.onload = () => resolve(img)
-    img.onerror = () => reject(new Error(`加载图片失败: ${src}`))
-    img.src = referenceImageUrl(src)
+    img.onerror = () => reject(new Error(`加载图片失败: ${url}`))
+    img.src = url
+  })
+}
+
+function loadImage(src: string): Promise<HTMLImageElement> {
+  const primary = referenceImageUrl(src)
+  return loadOneImage(primary).catch(() => {
+    const next = imageFallbackUrl(primary)
+    if (!next || next === primary) throw new Error(`加载图片失败: ${primary}`)
+    return loadOneImage(next)
   })
 }
 

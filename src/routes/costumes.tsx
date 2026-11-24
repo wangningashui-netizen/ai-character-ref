@@ -4,6 +4,7 @@ import { CheckIcon, CopyIcon, DownloadIcon, ExternalLinkIcon, PlusIcon, SearchIc
 import { useEffect, useMemo, useState } from 'react'
 import { costumesQuery, isNsfwCostume, isNsfwCostumeCategory } from '@/api/gallery'
 import { EmptyState } from '@/components/common/EmptyState'
+import { RefImage } from '@/components/common/RefImage'
 import { PageHeader } from '@/components/common/PageHeader'
 import { FilterRail, FilterTab } from '@/components/editorial/FilterRail'
 import { Spread } from '@/components/editorial/Spread'
@@ -125,7 +126,7 @@ function CostumesPage() {
               <article key={item.id}>
                 <button type="button" onClick={() => setViewerIndex(idx)} className="relative block w-full border border-rule bg-paper">
                   {!failed[item.id] && (
-                    <img src={referenceImageUrl(item.缩略图)} alt={item.服装名称} loading="lazy" onError={() => setFailed((prev) => ({ ...prev, [item.id]: true }))} className="aspect-[2/3] w-full object-contain" />
+                    <RefImage src={referenceImageUrl(item.缩略图)} alt={item.服装名称} loading="lazy" onError={() => setFailed((prev) => ({ ...prev, [item.id]: true }))} className="aspect-[2/3] w-full object-contain" />
                   )}
                   {failed[item.id] && <span className="flex aspect-[2/3] items-center justify-center px-3 text-xs text-muted-foreground">图片暂时打不开</span>}
                 </button>

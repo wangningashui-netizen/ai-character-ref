@@ -58,6 +58,7 @@ import {
   stitchRecipeCanvas,
   STYLE_PRESETS,
 } from '@/services/aiGenerator'
+import { RefImage } from '@/components/common/RefImage'
 import { poseImagePath, poseThumbPath, referenceImageUrl, uploadedReferences } from '@/lib/recipeImages'
 import { useStudio } from '@/store/studioStore'
 import { getGptInputFidelity } from '@/lib/gptImageCapabilities'
@@ -501,7 +502,7 @@ function StudioPage() {
                       const item = recipe.portrait
                       if (item) setZoomImageUrl(referenceImageUrl(item.原图 || item.缩略图))
                     }}>
-                      <img
+                      <RefImage
                         src={referenceImageUrl(recipe.portrait.缩略图)}
                         alt={recipe.portrait.标题}
                         className="aspect-[3/4] w-full bg-paper object-contain"
@@ -552,7 +553,7 @@ function StudioPage() {
                       const item = recipe.costume
                       if (item) setZoomImageUrl(referenceImageUrl(item.预览图 || item.原图 || item.缩略图))
                     }}>
-                      <img
+                      <RefImage
                         src={referenceImageUrl(recipe.costume.缩略图)}
                         alt={recipe.costume.服装名称}
                         className="aspect-[3/4] w-full bg-paper object-contain"
@@ -613,7 +614,7 @@ function StudioPage() {
                       const item = recipe.pose
                       if (item) setZoomImageUrl(referenceImageUrl(poseImagePath(item)))
                     }}>
-                      <img
+                      <RefImage
                         src={referenceImageUrl(poseThumbPath(recipe.pose))}
                         alt={recipe.pose.姿势名称}
                         className="aspect-[3/4] w-full bg-paper object-contain"
@@ -705,7 +706,7 @@ function StudioPage() {
                       key={img.id}
                       className="flex items-center gap-2 rounded-xl border border-border/60 bg-background p-1.5"
                     >
-                      <img
+                      <RefImage
                         src={img.url}
                         alt={img.name}
                         className="h-11 w-9 shrink-0 rounded-lg object-cover"

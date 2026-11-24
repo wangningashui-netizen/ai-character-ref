@@ -2,6 +2,7 @@ import { useEffect, useEffectEvent, useRef, useState, type CSSProperties, type P
 import { MinusIcon, PlusIcon, RotateCcwIcon, XIcon } from 'lucide-react'
 import { Dialog as DialogPrimitive } from 'radix-ui'
 import { Button } from '@/components/ui/button'
+import { RefImage } from '@/components/common/RefImage'
 import { comparisonReferences } from '@/lib/comparisonReferences'
 import type { GenerationHistoryItem } from '@/types/gallery'
 
@@ -106,7 +107,7 @@ function PaneLabel({ label }: { label: string }) { return <span className="point
 function ComparisonImage({ url, label, transform, onSize }: { url: string; label: string; transform: CSSProperties; onSize: (size: Dimensions) => void }) {
   const [state, setState] = useState<'loading' | 'loaded' | 'failed'>('loading')
   return <>
-    {state !== 'failed' && <img src={url} alt={label} draggable={false} className="pointer-events-none absolute inset-0 h-full w-full select-none object-contain" style={transform} onLoad={(e) => { setState('loaded'); onSize({ width: e.currentTarget.naturalWidth, height: e.currentTarget.naturalHeight }) }} onError={() => setState('failed')} />}
+    {state !== 'failed' && <RefImage src={url} alt={label} draggable={false} className="pointer-events-none absolute inset-0 h-full w-full select-none object-contain" style={transform} onLoad={(e) => { setState('loaded'); onSize({ width: e.currentTarget.naturalWidth, height: e.currentTarget.naturalHeight }) }} onError={() => setState('failed')} />}
     {state !== 'loaded' && <div role="status" className="pointer-events-none absolute inset-0 flex items-center justify-center p-8 text-center text-sm text-muted-foreground">{state === 'loading' ? '图片加载中…' : `${label}加载失败，可选择其他参考或稍后重试。`}</div>}
   </>
 }

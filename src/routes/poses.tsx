@@ -4,6 +4,7 @@ import { CheckIcon, CopyIcon, DownloadIcon, PlusIcon, SearchIcon } from 'lucide-
 import { useEffect, useMemo, useState } from 'react'
 import { ANGLES, isNsfwPose, isNsfwPoseSystem, posesQuery } from '@/api/gallery'
 import { EmptyState } from '@/components/common/EmptyState'
+import { RefImage } from '@/components/common/RefImage'
 import { PageHeader } from '@/components/common/PageHeader'
 import { FilterRail, FilterTab } from '@/components/editorial/FilterRail'
 import { Spread } from '@/components/editorial/Spread'
@@ -147,7 +148,7 @@ function PosesPage() {
             return (
               <article key={group.key}>
                 <button type="button" onClick={() => setViewer({ groupIndex: gIdx, item })} className="block w-full border border-rule bg-paper">
-                  <img src={referenceImageUrl(poseThumbPath(item, poseDepthMode))} alt={`${group.name} · ${item.角度}`} className="aspect-[3/4] w-full object-contain" />
+                  <RefImage src={referenceImageUrl(poseThumbPath(item, poseDepthMode))} alt={`${group.name} · ${item.角度}`} className="aspect-[3/4] w-full object-contain" />
                 </button>
                 <div className="mt-3 flex items-start justify-between gap-3">
                   <div>
@@ -166,7 +167,7 @@ function PosesPage() {
                     const current = angItem.id === item.id
                     return (
                       <button key={ang} type="button" onClick={() => setHoverAngles((prev) => ({ ...prev, [group.key]: ang }))} className={cn('border p-0.5', current ? 'border-cinnabar' : 'border-transparent')}>
-                        <img src={referenceImageUrl(poseThumbPath(angItem, poseDepthMode))} alt={ang} className="aspect-square w-full object-cover" />
+                        <RefImage src={referenceImageUrl(poseThumbPath(angItem, poseDepthMode))} alt={ang} className="aspect-square w-full object-cover" />
                         <span className="mt-1 block text-center text-[10px] text-muted-foreground">{ang}</span>
                       </button>
                     )
@@ -184,7 +185,7 @@ function PosesPage() {
             return (
               <article key={item.id}>
                 <button type="button" onClick={() => setViewer({ groupIndex: Math.max(0, gIdx), item })} className="block w-full border border-rule bg-paper">
-                  <img src={referenceImageUrl(poseThumbPath(item, poseDepthMode))} alt={item.姿势名称} className="aspect-[3/4] w-full object-contain" />
+                  <RefImage src={referenceImageUrl(poseThumbPath(item, poseDepthMode))} alt={item.姿势名称} className="aspect-[3/4] w-full object-contain" />
                 </button>
                 <h2 className="mt-3 font-serif text-lg leading-snug">{item.姿势名称}</h2>
                 <p className="mt-1 text-xs text-muted-foreground">{item.角度} · {item.分类}</p>
@@ -239,7 +240,7 @@ function PosesPage() {
                   if (!angItem) return null
                   return (
                     <button key={ang} type="button" onClick={() => setViewer({ groupIndex: viewer.groupIndex, item: angItem })} className={cn('border p-0.5', angItem.id === viewer.item.id ? 'border-cinnabar' : 'border-transparent')}>
-                      <img src={referenceImageUrl(poseThumbPath(angItem, poseDepthMode))} alt={ang} className="aspect-square w-full object-cover" />
+                      <RefImage src={referenceImageUrl(poseThumbPath(angItem, poseDepthMode))} alt={ang} className="aspect-square w-full object-cover" />
                     </button>
                   )
                 })}

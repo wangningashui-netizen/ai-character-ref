@@ -1,6 +1,7 @@
 import { useSuspenseQuery } from '@tanstack/react-query'
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { costumesQuery, isNsfwCostume, isNsfwPose, portraitsQuery, posesQuery } from '@/api/gallery'
+import { RefImage } from '@/components/common/RefImage'
 import { referenceImageUrl } from '@/lib/recipeImages'
 import { useStudio } from '@/store/studioStore'
 
@@ -47,7 +48,7 @@ function HomePage() {
           <figure>
             <div className="overflow-hidden border border-rule bg-paper">
               {leadPose && (
-                <img src={referenceImageUrl(leadPose.缩略图)} alt={leadPose.姿势名称} className="h-[210px] w-full object-contain md:h-auto md:max-h-[520px] md:aspect-[5/4]" />
+                <RefImage src={referenceImageUrl(leadPose.缩略图)} alt={leadPose.姿势名称} className="h-[210px] w-full object-contain md:h-auto md:max-h-[520px] md:aspect-[5/4]" />
               )}
             </div>
             <figcaption className="mt-4 flex items-baseline justify-between gap-4">
@@ -63,7 +64,7 @@ function HomePage() {
           <Link to="/costumes" className="group">
             <figure>
               <div className="overflow-hidden border border-rule bg-paper">
-                {leadCostume && <img src={referenceImageUrl(leadCostume.缩略图)} alt={leadCostume.服装名称} className="aspect-[4/3] w-full object-contain" />}
+                {leadCostume && <RefImage src={referenceImageUrl(leadCostume.缩略图)} alt={leadCostume.服装名称} className="aspect-[4/3] w-full object-contain" />}
               </div>
               <figcaption className="mt-3">
                 <p className="text-[11px] tracking-[0.22em] text-cinnabar">02 · 服装</p>
@@ -74,7 +75,7 @@ function HomePage() {
           <Link to="/portraits" className="group">
             <figure>
               <div className="overflow-hidden border border-rule bg-paper">
-                {leadPortrait && <img src={referenceImageUrl(leadPortrait.缩略图)} alt={leadPortrait.标题} className="aspect-[4/3] w-full object-cover object-top" />}
+                {leadPortrait && <RefImage src={referenceImageUrl(leadPortrait.缩略图)} alt={leadPortrait.标题} className="aspect-[4/3] w-full object-cover object-top" />}
               </div>
               <figcaption className="mt-3">
                 <p className="text-[11px] tracking-[0.22em] text-cinnabar">03 · 人像</p>
@@ -96,7 +97,7 @@ function HomePage() {
             return (
               <button key={item.id} type="button" onClick={() => togglePortrait(item)} className="text-left">
                 <div className="border border-rule bg-paper">
-                  <img src={referenceImageUrl(item.缩略图)} alt={item.标题} className="aspect-[4/5] w-full object-cover object-top" />
+                  <RefImage src={referenceImageUrl(item.缩略图)} alt={item.标题} className="aspect-[4/5] w-full object-cover object-top" />
                 </div>
                 <div className="mt-3 flex items-baseline justify-between gap-2">
                   <span className="font-serif text-lg">{item.发型名称}</span>
