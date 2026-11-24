@@ -1,0 +1,47 @@
+MIT License
+
+Copyright (c) 2026 Anhao
+
+本仓库程序在 Anhao 的 ai-pose-gallery-zh 基础上重新排版。
+上游版权声明予以保留。
+
+--- 适用范围说明 / Scope ---
+
+本协议仅适用于本仓库中的源代码（网页程序、构建配置与说明文件）。
+
+图库图片与原始数据不属于本协议：
+
+- 姿势、写实服装、人像参考图著作权归 ギア（@giaaibusi）所有。
+  来源站点：
+  https://ai-pose-gallery.pages.dev/
+  https://ai-pose-depth-gallery.pages.dev/
+  https://ai-costume-gallery.pages.dev/
+  https://ai-portrait-gallery.pages.dev/
+  原作者：https://x.com/giaaibusi
+- 二次元服装来自 たき AI（@taki_auto）的 CharaDB。
+  https://charadb-2fi.pages.dev/
+  https://github.com/taki-ttt/charadb/blob/main/LICENSE
+- 中国历代服装来自 Shisei / wquguru（CC0）。
+  https://github.com/wquguru/shisei
+
+上述素材不适用本 MIT 协议，不得用于商业倒卖。本仓库不打包这些图片，页面打开时从原站读取。如权利人提出异议将立即移除相关索引。
+
+--- MIT License Text ---
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
