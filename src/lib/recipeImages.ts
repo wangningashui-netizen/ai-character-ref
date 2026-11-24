@@ -4,16 +4,32 @@ const POSE_ORIGIN = 'https://ai-pose-gallery.pages.dev/'
 const DEPTH_ORIGIN = 'https://ai-pose-depth-gallery.pages.dev/'
 const COSTUME_ORIGIN = 'https://ai-costume-gallery.pages.dev/'
 const PORTRAIT_ORIGIN = 'https://ai-portrait-gallery.pages.dev/'
+const ANIME_ORIGIN = 'https://ai-costume-anime-gallery.pages.dev/'
+const CHARADB_ORIGIN = 'https://charadb-2fi.pages.dev/'
 const SHISEI_REV = '8f61ceab10e45f8d3afd254900903733a0ba76ee'
 const SHISEI_ORIGIN = `https://cdn.jsdelivr.net/gh/wquguru/shisei@${SHISEI_REV}/images/costume/grey/`
 
-/**
- * Catalog files are not stored in this repository. Relative paths are rewritten
- * to the public host that actually serves that image, with CORS enabled.
- */
-export function referenceImageUrl(src: string): string {
+/** 空字符串表示仍从原站读取。 */
+export const IMAGE_MIRROR_PREFIX = 'https://raw.githubusercontent.com/wangningashui-netizen/ai-character-ref-images/main'
+
+const MIRROR_HOSTS = [
+  { host: DEPTH_ORIGIN, folder: 'poses-depth' },
+  { host: ANIME_ORIGIN, folder: 'costumes-anime' },
+  { host: COSTUME_ORIGIN, folder: 'costumes' },
+  { host: PORTRAIT_ORIGIN, folder: 'portraits' },
+  { host: CHARADB_ORIGIN, folder: 'charadb' },
+  { host: POSE_ORIGIN, folder: 'poses' },
+] as const
+
+function mirrorRoot(prefix = IMAGE_MIRROR_PREFIX) {
+  return prefix.replace(/\/+$/, '')
+}
+
+/** 目录里的相对路径，以及已经写好的原站地址，都还原成原站 URL。 */
+export function originalReferenceUrl(src: string): string {
   if (!src) return src
-  if (/^(data:|blob:|https?:\/\/)/i.test(src)) return src
+  if (/^(data:|blob:)/i.test(src)) return src
+  if (/^https?:\/\//i.test(src)) return src
   const clean = src.replace(/^\/+/, '')
 
   const shiseiThumb = clean.match(/^thumbs\/costumes\/shisei\/(.+)$/i)
@@ -42,8 +58,53 @@ export function referenceImageUrl(src: string): string {
   return src
 }
 
+export function mirrorFromOriginal(originalUrl: string, prefix = IMAGE_MIRROR_PREFIX): string {
+  if (!prefix || !/^https?:\/\//i.test(originalUrl)) return originalUrl
+  if (originalUrl.startsWith(SHISEI_ORIGIN)) {
+    return `${mirrorRoot(prefix)}/shisei/${originalUrl.slice(SHISEI_ORIGIN.length)}`
+  }
+  for (const { host, folder } of MIRROR_HOSTS) {
+    if (originalUrl.startsWith(host)) {
+      return `${mirrorRoot(prefix)}/${folder}/${originalUrl.slice(host.length)}`
+    }
+  }
+  return originalUrl
+}
+
+/** 镜像地址失败时，还原成只试一次的原站地址。不是镜像地址则返回空。 */
+export function imageFallbackUrl(failedUrl: string, prefix = IMAGE_MIRROR_PREFIX): string | null {
+  if (!prefix) return null
+  const base = `${mirrorRoot(prefix)}/`
+  if (!failedUrl.startsWith(base)) return null
+  const rest = failedUrl.slice(base.length)
+  if (rest.startsWith('shisei/')) return `${SHISEI_ORIGIN}${rest.slice('shisei/'.length)}`
+  for (const { host, folder } of MIRROR_HOSTS) {
+    const folderPrefix = `${folder}/`
+    if (rest.startsWith(folderPrefix)) return host + rest.slice(folderPrefix.length)
+  }
+  return null
+}
+
+export function referenceImageUrl(src: string, prefix = IMAGE_MIRROR_PREFIX): string {
+  return mirrorFromOriginal(originalReferenceUrl(src), prefix)
+}
+
+export async function fetchWithImageFallback(url: string, init?: RequestInit): Promise<Response> {
+  try {
+    const first = await fetch(url, init)
+    if (first.ok) return first
+    const next = imageFallbackUrl(url)
+    if (!next || next === url) return first
+    return await fetch(next, init)
+  } catch (error) {
+    const next = imageFallbackUrl(url)
+    if (!next || next === url) throw error
+    return await fetch(next, init)
+  }
+}
+
 export async function downloadRemoteImage(url: string, filename: string) {
-  const response = await fetch(url)
+  const response = await fetchWithImageFallback(url)
   if (!response.ok) throw new Error('下载失败')
   const blob = await response.blob()
   const objectUrl = URL.createObjectURL(blob)

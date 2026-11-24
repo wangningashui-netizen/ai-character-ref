@@ -4,6 +4,7 @@ import { CheckIcon, CopyIcon, DownloadIcon, PlusIcon, SearchIcon } from 'lucide-
 import { useEffect, useMemo, useState } from 'react'
 import { portraitsQuery } from '@/api/gallery'
 import { EmptyState } from '@/components/common/EmptyState'
+import { RefImage } from '@/components/common/RefImage'
 import { PageHeader } from '@/components/common/PageHeader'
 import { FilterRail, FilterTab } from '@/components/editorial/FilterRail'
 import { Spread } from '@/components/editorial/Spread'
@@ -104,7 +105,7 @@ function PortraitsPage() {
             return (
               <article key={item.id}>
                 <button type="button" onClick={() => setViewerIndex(filtered.indexOf(item))} className="block w-full border border-rule bg-paper">
-                  <img src={referenceImageUrl(item.缩略图)} alt={item.标题} loading="lazy" className="aspect-[4/5] w-full object-cover object-top" />
+                  <RefImage src={referenceImageUrl(item.缩略图)} alt={item.标题} loading="lazy" className="aspect-[4/5] w-full object-cover object-top" />
                 </button>
                 <div className="mt-3 flex items-baseline justify-between gap-2">
                   <h2 className="min-w-0 flex-1 font-serif text-lg leading-snug">{item.发型名称}</h2>

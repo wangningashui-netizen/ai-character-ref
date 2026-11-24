@@ -1,5 +1,6 @@
 import { useEffect, useEffectEvent, useRef, useState, type ReactNode } from 'react'
 import { MinusIcon, PlusIcon, RotateCcwIcon } from 'lucide-react'
+import { RefImage } from '@/components/common/RefImage'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
@@ -108,7 +109,7 @@ function ZoomSurface({ imageUrl, alt = '图片预览', children, contentWidth = 
       onPointerCancel={(e) => { pointers.current.delete(e.pointerId); previous.current = gesture() }}
       onLostPointerCapture={(e) => { pointers.current.delete(e.pointerId); previous.current = gesture() }}>
       <div className="pointer-events-none absolute top-1/2 left-1/2 origin-center select-none" style={{ width: natural.width, height: natural.height, transform: `translate(-50%, -50%) translate(${view.x}px, ${view.y}px) scale(${fit * view.zoom})` }}>
-        {children ?? (imageUrl && !imageFailed && <img src={imageUrl} alt={alt} draggable={false} className="h-full w-full object-contain" onError={() => setImageFailed(true)} onLoad={(e) => { setNatural({ width: e.currentTarget.naturalWidth, height: e.currentTarget.naturalHeight }); reset() }} />)}
+        {children ?? (imageUrl && !imageFailed && <RefImage src={imageUrl} alt={alt} draggable={false} className="h-full w-full object-contain" onError={() => setImageFailed(true)} onLoad={(e) => { setNatural({ width: e.currentTarget.naturalWidth, height: e.currentTarget.naturalHeight }); reset() }} />)}
       </div>
       {!children && imageFailed && <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-background/90 p-4 text-center" onPointerDown={(e) => e.stopPropagation()}>
         <p role="status" className="text-sm text-muted-foreground">图片加载失败，请检查网络后重试。</p>

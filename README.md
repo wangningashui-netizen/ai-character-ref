@@ -15,19 +15,17 @@
 
 原项目大约 1.1 GB、一万多张图，超过 GitHub Pages 大约 1 GB 的发布上限，也不适合塞进仓库。
 
-这个站点只保存中文目录（大约 4 MB）。图片在打开时从原作者的公开站点读取，并且这些站点允许网页跨域使用，所以灯箱、下载和参考拼图可以正常工作：
+这个站点只保存中文目录（大约 4 MB）。图片放在 [ai-character-ref-images](https://github.com/wangningashui-netizen/ai-character-ref-images)，打开时从 `raw.githubusercontent.com` 读取。如果某一张镜像打不开，会再试一次原来的网站。
 
-| 内容 | 读取地址 |
-| --- | --- |
-| 姿势白模 | https://ai-pose-gallery.pages.dev/ |
-| 姿势深度图 | https://ai-pose-depth-gallery.pages.dev/ |
-| 写实服装 | https://ai-costume-gallery.pages.dev/ |
-| 人像 | https://ai-portrait-gallery.pages.dev/ |
-| 动漫服装 | https://ai-costume-anime-gallery.pages.dev/ |
-| 二次元服装 | https://charadb-2fi.pages.dev/ |
-| 中国历代服装 | jsDelivr 上的 [Shisei](https://github.com/wquguru/shisei) 固定版本 |
-
-如果某个原站关闭，对应图片会打不开，目录文字还在。
+| 内容 | 镜像文件夹 | 打不开时回退到 |
+| --- | --- | --- |
+| 姿势白模 | `poses/` | https://ai-pose-gallery.pages.dev/ |
+| 姿势深度图 | `poses-depth/` | https://ai-pose-depth-gallery.pages.dev/ |
+| 写实服装 | `costumes/` | https://ai-costume-gallery.pages.dev/ |
+| 人像 | `portraits/` | https://ai-portrait-gallery.pages.dev/ |
+| 动漫服装 | `costumes-anime/` | https://ai-costume-anime-gallery.pages.dev/ |
+| 二次元服装 | `charadb/` | https://charadb-2fi.pages.dev/ |
+| 中国历代服装 | `shisei/` | jsDelivr 上的 [Shisei](https://github.com/wquguru/shisei) 固定版本 |
 
 ## 没有带上的部分
 

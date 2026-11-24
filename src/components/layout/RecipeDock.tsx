@@ -2,6 +2,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { Link, useLocation } from '@tanstack/react-router'
 import { DicesIcon, Trash2Icon } from 'lucide-react'
 import { costumesQuery, portraitsQuery, posesQuery } from '@/api/gallery'
+import { RefImage } from '@/components/common/RefImage'
 import { poseThumbPath, referenceImageUrl } from '@/lib/recipeImages'
 import { useStudio } from '@/store/studioStore'
 
@@ -9,7 +10,7 @@ function Thumb({ src, label, empty }: { src?: string; label: string; empty: stri
   return (
     <div className="flex min-w-0 items-center gap-2">
       <div className="size-12 shrink-0 border border-rule bg-paper">
-        {src ? <img src={referenceImageUrl(src)} alt="" className="size-full object-cover" /> : null}
+        {src ? <RefImage src={referenceImageUrl(src)} alt="" className="size-full object-cover" /> : null}
       </div>
       <div className="min-w-0">
         <div className="text-[10px] tracking-[0.18em] text-muted-foreground">{label}</div>

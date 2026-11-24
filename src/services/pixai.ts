@@ -1,5 +1,5 @@
 import type { ApiConfig, PixAiParams, RecipeState } from '@/types/gallery'
-import { poseImagePath, referenceImageUrl } from '@/lib/recipeImages'
+import { fetchWithImageFallback, poseImagePath, referenceImageUrl } from '@/lib/recipeImages'
 import type { GenerationProgress } from './aiGenerator'
 
 export const PIXAI_MODEL = '2024383379556065549'
@@ -79,7 +79,7 @@ export async function pixAiImageMime(blob: Blob): Promise<string | null> {
 export async function preparePixAiImage(src: string, label: string, signal?: AbortSignal): Promise<Blob> {
   try {
     let response: Response
-    try { response = await fetch(referenceImageUrl(src), { signal }) } catch {
+    try { response = await fetchWithImageFallback(referenceImageUrl(src), { signal }) } catch {
       signal?.throwIfAborted()
       throw new Error('无法读取素材；远程图片可能不允许跨域读取，可下载后上传到该槽位')
     }
