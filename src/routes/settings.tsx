@@ -1,0 +1,245 @@
+import { createFileRoute, Link } from '@tanstack/react-router'
+import {
+  CheckIcon,
+  ExternalLinkIcon,
+  EyeIcon,
+  EyeOffIcon,
+  RotateCcwIcon,
+  ScanSearchIcon,
+  SparklesIcon,
+} from 'lucide-react'
+import { useState } from 'react'
+import { toast } from '@/lib/notifications'
+import { Field, Section } from '@/components/common/FormSection'
+import { PageHeader } from '@/components/common/PageHeader'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { detectComfyUi, PROVIDER_META } from '@/services/aiGenerator'
+import { useStudio } from '@/store/studioStore'
+import type { ImagePassMode, ImageProviderId } from '@/types/gallery'
+import { ComfyConnectionStatus } from '@/components/studio/ComfyConnectionStatus'
+import { COMFY_CONNECTION_LABELS } from '@/store/useComfyConnection'
+
+export const Route = createFileRoute('/settings')({
+  staticData: { title: 'API 配置' },
+  component: SettingsPage,
+})
+
+const PROVIDER_ORDER: ImageProviderId[] = ['gemini', 'gpt', 'qwen', 'doubao', 'pixai', 'comfyui']
+
+function SettingsPage() {
+  const { apiConfig, updateApiConfig, updateProviderConfig, comfyConnection } = useStudio()
+  const [showKey, setShowKey] = useState(false)
+  const [testingComfy, setTestingComfy] = useState(false)
+
+  const pid = apiConfig.activeProvider
+  const meta = PROVIDER_META[pid]
+  const pCfg = apiConfig.providers[pid]
+
+  const handleDetectComfy = async () => {
+    setTestingComfy(true)
+    try {
+      const found = await detectComfyUi(pCfg.baseUrl, pCfg.apiKey)
+      if (!found) {
+        toast.error('未找到可用的 ComfyUI（已尝试当前地址、127.0.0.1:8000、127.0.0.1:8188），请确认已启动并检查跨域设置', {
+          duration: 10000,
+        })
+        return
+      }
+      updateProviderConfig('comfyui', { baseUrl: found.baseUrl })
+      toast.success(`已识别：${found.info}（${found.baseUrl}）`)
+    } finally {
+      setTestingComfy(false)
+    }
+  }
+
+  return (
+    <>
+      <PageHeader
+        title="API 接口配置"
+        actions={
+          <Button size="sm" asChild>
+            <Link to="/studio">
+              <SparklesIcon className="size-4" />
+              返回合成台
+            </Link>
+          </Button>
+        }
+      />
+
+      {/* 五大协议切换标签 */}
+      <div className="grid grid-cols-2 gap-px border border-rule bg-rule sm:grid-cols-3">
+        {PROVIDER_ORDER.map((id) => {
+          const itemMeta = PROVIDER_META[id]
+          const isActive = pid === id
+          const hasKey =
+            id === 'comfyui'
+              ? Boolean(apiConfig.providers.comfyui.baseUrl.trim())
+              : Boolean(apiConfig.providers[id].apiKey.trim())
+          return (
+            <button
+              key={id}
+              type="button"
+              onClick={() => updateApiConfig({ activeProvider: id })}
+              className={`flex min-h-16 items-center justify-between bg-white px-3.5 py-3 text-left ${
+                isActive ? 'font-medium text-cinnabar' : 'text-foreground'
+              }`}
+            >
+              <span className="min-w-0"><span className="block truncate text-sm">{itemMeta.name}</span><span className="block text-xs font-normal text-muted-foreground">{id === 'comfyui' ? COMFY_CONNECTION_LABELS[comfyConnection.status] : hasKey ? '已配置' : '未配置 Key'}</span></span>
+              <span
+                aria-hidden="true"
+                className={`size-2 shrink-0 rounded-full ${
+                  id === 'comfyui' && comfyConnection.status === 'connected' ? 'bg-emerald-500' : hasKey ? 'bg-amber-500' : 'bg-muted-foreground/30'
+                }`}
+                title={id === 'comfyui' ? COMFY_CONNECTION_LABELS[comfyConnection.status] : hasKey ? '已配置，尚未检测' : '未配置 Key'}
+              />
+            </button>
+          )
+        })}
+      </div>
+
+      {pid === 'comfyui' && <ComfyConnectionStatus />}
+
+      {/* 当前厂商连接配置 */}
+      <Section
+        title={`${meta.name} 连接配置`}
+        actions={
+          <div className="flex items-center gap-1.5">
+            {pid === 'comfyui' && (
+              <>
+                <Button variant="outline" size="sm" onClick={handleDetectComfy} disabled={testingComfy}>
+                  <ScanSearchIcon className="size-3.5" />
+                  自动识别
+                </Button>
+              </>
+            )}
+            <Button variant="ghost" size="sm" asChild>
+              <a href={meta.docUrl} target="_blank" rel="noreferrer">
+                <ExternalLinkIcon className="size-3.5" />
+                文档
+              </a>
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                updateProviderConfig(pid, {
+                  baseUrl: meta.defaultBaseUrl,
+                  model: meta.models[0].value,
+                })
+                toast.success('已恢复默认')
+              }}
+            >
+              <RotateCcwIcon className="size-3.5" />
+              重置
+            </Button>
+          </div>
+        }
+      >
+        <Field
+          label={pid === 'comfyui' ? 'ComfyUI 地址 (Base URL)' : 'Base URL'}
+          hint={
+            pid === 'comfyui'
+              ? `本地运行本站时填 /comfy（同源代理，无需改跨域设置）；直连时 ComfyUI 需加启动参数 --enable-cors-header "${typeof window !== 'undefined' ? window.location.origin : '*'}"。Desktop 版默认端口 8000，便携版 8188`
+              : undefined
+          }
+        >
+          <Input
+            disabled={pid === 'pixai'}
+            type={pid === 'comfyui' ? 'text' : 'url'}
+            value={pCfg.baseUrl}
+            onChange={(e) => updateProviderConfig(pid, { baseUrl: e.target.value })}
+            placeholder={meta.defaultBaseUrl}
+          />
+        </Field>
+
+        <Field label={pid === 'comfyui' ? 'API Key（可选，本地留空）' : 'API Key'}>
+          <div className="relative">
+            <Input
+              type={showKey ? 'text' : 'password'}
+              value={pCfg.apiKey}
+              onChange={(e) => updateProviderConfig(pid, { apiKey: e.target.value })}
+              placeholder={
+                pid === 'comfyui'
+                  ? '本地 ComfyUI 无需填写，远程鉴权可填 Token'
+                  : '输入 API Key（仅保存在本地浏览器）'
+              }
+              className="pr-10"
+            />
+            <button
+              type="button"
+              onClick={() => setShowKey((s) => !s)}
+              className="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+            >
+              {showKey ? <EyeOffIcon className="size-4" /> : <EyeIcon className="size-4" />}
+            </button>
+          </div>
+        </Field>
+
+        {pid !== 'comfyui' && (
+          <Field label="默认模型 ID">
+            <Select
+              value={pCfg.model}
+              onValueChange={(v) => updateProviderConfig(pid, { model: v })}
+            >
+              <SelectTrigger className="w-full font-mono text-xs">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {meta.models.map((m) => (
+                  <SelectItem key={m.value} value={m.value} className="font-mono text-xs">
+                    {m.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </Field>
+        )}
+
+        {pid !== 'comfyui' && pCfg.model === 'custom' && (
+          <Field label="自定义模型 ID">
+            <Input
+              value={pCfg.customModel}
+              onChange={(e) => updateProviderConfig(pid, { customModel: e.target.value })}
+              placeholder={pid === 'doubao' ? 'ep-2026xxxx 或模型 ID' : '输入模型 ID'}
+              className="font-mono text-xs"
+            />
+          </Field>
+        )}
+      </Section>
+
+      {pid === 'comfyui' && (
+        <p className="text-sm text-muted-foreground">模型由工作流决定。请返回合成台导入工作流，并设置人像、服装和姿势节点。</p>
+      )}
+
+      {/* 全局传输设置 */}
+      {pid === 'pixai' && <p className="text-sm leading-relaxed text-muted-foreground">支持 Tsubaki.3 和 Tsubaki.3 Flash，每次一张。人像、服装、姿势各一图。密钥从浏览器直接发给 PixAI，不经过本站。</p>}
+      {pid !== 'comfyui' && (
+        <Section title="怎么把图交给模型" desc="这个网站放在 GitHub Pages 上，没有服务器中转。密钥只留在浏览器里，生图请求直接发给你选的服务。Gemini、OpenAI、百炼和火山方舟都允许网页直接访问。">
+          {pid !== 'pixai' && <Field label="参考图传参方式">
+            <Select
+              value={apiConfig.imagePassMode}
+              onValueChange={(v) => updateApiConfig({ imagePassMode: v as ImagePassMode })}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="url">传递图片 URL（免上传文件，推荐）</SelectItem>
+                <SelectItem value="base64">转 Base64 编码传输</SelectItem>
+              </SelectContent>
+            </Select>
+          </Field>}
+        </Section>
+      )}
+
+      <div className="flex justify-end">
+        <Button size="sm" onClick={() => toast.success('配置已保存')}>
+          <CheckIcon className="size-4" />
+          保存配置
+        </Button>
+      </div>
+    </>
+  )
+}
